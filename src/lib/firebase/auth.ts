@@ -9,6 +9,9 @@ import {
   onAuthStateChanged,
   updateProfile,
   User,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  type ConfirmationResult,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from './config';
@@ -62,6 +65,29 @@ class AuthService {
     }
     return result;
   };
+
+  setupRecaptcha = (containerId: string) => {
+    if (typeof window !== 'undefined') {
+        // Clear any existing verifier
+        if ((window as any).recaptchaVerifier) {
+            (window as any).recaptchaVerifier.clear();
+        }
+
+        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+            'size': 'invisible',
+            'callback': (response: any) => {
+                // reCAPTCHA solved, allow signInWithPhoneNumber.
+            }
+        });
+        return (window as any).recaptchaVerifier;
+    }
+    return null;
+  };
+
+  signInWithPhone = async (phoneNumber: string, appVerifier: RecaptchaVerifier): Promise<ConfirmationResult> => {
+     return signInWithPhoneNumber(this.auth, phoneNumber, appVerifier);
+  };
+
 
   signOut = () => {
     return signOut(this.auth);
