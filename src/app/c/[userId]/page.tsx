@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -82,7 +83,7 @@ export default function SharedCardPage() {
              <DigitalCard user={profile} />
             {user && user.uid !== userId && (
                 <Button className="w-full" onClick={handleAddContact} disabled={isAdding}>
-                    <UserPlus />
+                    <UserPlus className="mr-2 h-4 w-4" />
                     {isAdding ? 'Adding...' : 'Add to My Contacts'}
                 </Button>
             )}
