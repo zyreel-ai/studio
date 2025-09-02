@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProfileForm from '@/components/profile-form';
 import BackgroundGenerator from '@/components/background-generator';
 import { Skeleton } from '@/components/ui/skeleton';
+import CardTierManager from '@/components/card-tier-manager';
 
 export default function ProfilePage() {
   const { userProfile, reloadUserProfile } = useAuth();
@@ -21,15 +22,19 @@ export default function ProfilePage() {
       </div>
 
       <Tabs defaultValue="edit-profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="edit-profile">Edit Profile</TabsTrigger>
           <TabsTrigger value="card-appearance">Card Appearance</TabsTrigger>
+          <TabsTrigger value="card-tier">Card Tier</TabsTrigger>
         </TabsList>
         <TabsContent value="edit-profile">
           <ProfileForm userProfile={userProfile} onProfileUpdate={reloadUserProfile} />
         </TabsContent>
         <TabsContent value="card-appearance">
           <BackgroundGenerator userProfile={userProfile} onProfileUpdate={reloadUserProfile} />
+        </TabsContent>
+         <TabsContent value="card-tier">
+          <CardTierManager userProfile={userProfile} />
         </TabsContent>
       </Tabs>
     </div>
@@ -74,12 +79,12 @@ function ProfilePageSkeleton() {
                         <Skeleton className="h-5 w-1/4 rounded-md" />
                         <Skeleton className="h-10 w-full rounded-md" />
                     </div>
-                     <div className="space-y-2">
+                     <div className="space-y_2">
                         <Skeleton className="h-5 w-1/4 rounded-md" />
                         <Skeleton className="h-10 w-full rounded-md" />
                     </div>
                 </div>
-                 <div className="space-y-2">
+                 <div className="space-y_2">
                     <Skeleton className="h-5 w-1/4 rounded-md" />
                     <Skeleton className="h-10 w-full rounded-md" />
                 </div>

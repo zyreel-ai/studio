@@ -34,6 +34,7 @@ class AuthService {
       id: user.uid,
       name,
       email: user.email!,
+      cardTier: 'bronze',
     };
     await setDoc(doc(db, "users", user.uid), newUserProfile);
     
@@ -60,6 +61,7 @@ class AuthService {
         name: user.displayName || 'New User',
         email: user.email!,
         avatarUrl: user.photoURL || defaultUserProfile.avatarUrl,
+        cardTier: 'bronze',
       };
       await setDoc(doc(db, "users", user.uid), newUserProfile);
     }

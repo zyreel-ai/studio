@@ -9,6 +9,7 @@ export interface UserProfile {
   avatarUrl: string;
   cardBackgroundUrl?: string;
   uid?: string;
+  cardTier?: 'bronze' | 'silver' | 'gold' | 'diamond';
 }
 
 export interface Contact extends UserProfile {}
