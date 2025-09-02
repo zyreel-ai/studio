@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
@@ -5,6 +6,7 @@ import { User } from 'firebase/auth';
 import { authService } from '@/lib/firebase/auth';
 import { UserProfile } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -23,11 +25,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged(async (user) => {
-      setUser(user);
+      setLoading(true);
       if (user) {
+        setUser(user);
         const profile = await authService.getUserProfile(user.uid);
         setUserProfile(profile);
       } else {
+        setUser(null);
         setUserProfile(null);
       }
       setLoading(false);
@@ -44,20 +48,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
   const reloadUserProfile = async () => {
     if (user) {
+      setLoading(true);
       const profile = await authService.getUserProfile(user.uid);
       setUserProfile(profile);
+      setLoading(false);
     }
   };
 
   const value = { user, userProfile, loading, logout, reloadUserProfile };
-
-  if (loading) {
-    return (
-        <div className="flex h-screen items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-    );
-  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
