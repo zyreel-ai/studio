@@ -47,7 +47,7 @@ const DigitalCard = ({ user }: DigitalCardProps) => {
       .join('');
   };
 
-  const isDefaultBg = user.cardBackgroundUrl === '/card-bg-default.svg';
+  const isDefaultBg = !user.cardBackgroundUrl || user.cardBackgroundUrl === '/card-bg-default.svg';
   const tier = user.cardTier || 'bronze';
   const styles = tierStyles[tier];
 
