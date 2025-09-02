@@ -37,9 +37,7 @@ export default function SharedCardPage() {
     if (!user || !profile) return;
     setIsAdding(true);
     try {
-      // This is a placeholder for the actual add contact logic
-      // In a real app, you would have a Firebase function or a direct firestore write here
-      console.log(`Adding ${profile.name} to ${user.displayName}'s contacts.`);
+      await authService.addContact(user.uid, profile);
       toast({
         title: 'Contact Added!',
         description: `${profile.name} has been added to your connections.`

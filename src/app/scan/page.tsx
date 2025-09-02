@@ -7,17 +7,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useRouter } from 'next/navigation';
 
 export default function ScanPage() {
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [scanResult, setScanResult] = useState<string | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     const getCameraPermission = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        stream.getTracks().forEach(track => track.stop()); // Stop using camera immediately
+        stream.getTracks().forEach(track => track.stop());
         setHasCameraPermission(true);
       } catch (error) {
         console.error('Error accessing camera:', error);
@@ -29,15 +31,25 @@ export default function ScanPage() {
 
   const handleScan = (result: any, error: any) => {
     if (!!result) {
-      setScanResult(result?.text);
-      toast({
-        title: 'QR Code Scanned!',
-        description: `Data: ${result.text}`,
-      });
+      const url = result?.text;
+      if (url && (url.includes('/c/'))) {
+          setScanResult(url);
+          toast({
+            title: 'QR Code Scanned!',
+            description: `Redirecting to user profile...`,
+          });
+          router.push(url);
+      } else {
+          toast({
+              title: 'Invalid QR Code',
+              description: 'This does not appear to be a valid ConvoTag card.',
+              variant: 'destructive'
+          })
+      }
     }
 
     if (!!error) {
-       if (error.name !== 'NotAllowedError' && error.name !== 'NotFoundError') {
+       if (error.name !== 'NotAllowedError' && error.name !== 'NotFoundError' && error.name !== 'NoVideoInputDevicesError') {
         console.info(error);
       }
     }

@@ -13,10 +13,10 @@ import {
   signInWithPhoneNumber,
   type ConfirmationResult,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, writeBatch, collection, getDocs, query } from 'firebase/firestore';
 import { auth, db } from './config';
 import { userProfile as defaultUserProfile } from '@/lib/data';
-import type { UserProfile } from '@/lib/types';
+import type { UserProfile, Contact } from '@/lib/types';
 
 
 class AuthService {
@@ -72,16 +72,13 @@ class AuthService {
 
   setupRecaptcha = (containerId: string) => {
     if (typeof window !== 'undefined') {
-        // Clear any existing verifier
         if ((window as any).recaptchaVerifier) {
             (window as any).recaptchaVerifier.clear();
         }
 
         (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
             'size': 'invisible',
-            'callback': (response: any) => {
-                // reCAPTCHA solved, allow signInWithPhoneNumber.
-            }
+            'callback': (response: any) => {},
         });
         return (window as any).recaptchaVerifier;
     }
@@ -122,6 +119,19 @@ class AuthService {
   updateUserProfile = async (uid: string, profileData: Partial<UserProfile>) => {
     const userRef = doc(db, "users", uid);
     return setDoc(userRef, profileData, { merge: true });
+  }
+
+  addContact = async (currentUserId: string, contactProfile: UserProfile) => {
+    if (!contactProfile.uid) throw new Error("Contact profile is missing UID.");
+    const contactRef = doc(db, "users", currentUserId, "contacts", contactProfile.uid);
+    return setDoc(contactRef, contactProfile, { merge: true });
+  }
+
+  getContacts = async (uid: string): Promise<Contact[]> => {
+    const contactsRef = collection(db, "users", uid, "contacts");
+    const q = query(contactsRef);
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => doc.data() as Contact);
   }
 }
 
