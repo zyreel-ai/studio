@@ -13,7 +13,7 @@ import {
   signInWithPhoneNumber,
   type ConfirmationResult,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { auth, db } from './config';
 import { userProfile as defaultUserProfile } from '@/lib/data';
 import type { UserProfile } from '@/lib/types';
@@ -51,7 +51,9 @@ class AuthService {
     const user = result.user;
 
     // Check if user profile already exists
-    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
     if (!userDoc.exists()) {
       // Create a new profile if it doesn't exist
       const newUserProfile: UserProfile = {
@@ -63,7 +65,7 @@ class AuthService {
         avatarUrl: user.photoURL || defaultUserProfile.avatarUrl,
         cardTier: 'bronze',
       };
-      await setDoc(doc(db, "users", user.uid), newUserProfile);
+      await setDoc(userDocRef, newUserProfile);
     }
     return result;
   };
@@ -104,11 +106,17 @@ class AuthService {
   };
 
   getUserProfile = async (uid: string): Promise<UserProfile | null> => {
-    const userDoc = await getDoc(doc(db, "users", uid));
-    if (userDoc.exists()) {
-      return userDoc.data() as UserProfile;
+    const userDocRef = doc(db, "users", uid);
+    try {
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          return userDoc.data() as UserProfile;
+        }
+        return null;
+    } catch(e) {
+        console.error("Error fetching user profile:", e);
+        return null;
     }
-    return null;
   }
 
   updateUserProfile = async (uid: string, profileData: Partial<UserProfile>) => {
