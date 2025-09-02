@@ -30,19 +30,19 @@ export default function SharedCardPage() {
         setProfile(fetchedProfile);
         setLoading(false);
         if (fetchedProfile) {
-          analyticsService.logEvent('view_card', { card_owner_id: userId });
+          analyticsService.logEvent('view_card', { card_owner_id: userId, viewer_id: user?.uid || 'anonymous' });
         }
       };
       fetchProfile();
     }
-  }, [userId]);
+  }, [userId, user]);
   
   const handleAddContact = async () => {
     if (!user || !profile) return;
     setIsAdding(true);
     try {
       await authService.addContact(user.uid, profile);
-      analyticsService.logEvent('add_contact', { contact_id: profile.uid });
+      analyticsService.logEvent('add_contact', { contact_id: profile.uid, added_by: user.uid });
       toast({
         title: 'Contact Added!',
         description: `${profile.name} has been added to your connections.`
