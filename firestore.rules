@@ -1,40 +1,27 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Default: Deny all reads and writes
-    match /{document=**} {
-      allow read, write: if false;
+
+    // Helper function to check if a user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Users collection
+    // User Profiles
+    // - Anyone can read a user's profile (for sharing cards).
+    // - Only the owner of a profile can create or update it.
+    // - No one can delete a user profile.
     match /users/{userId} {
-      // Allow a user to read their own profile
-      allow read: if request.auth != null && request.auth.uid == userId;
-      
-      // Allow public read for the purpose of viewing a shared card
-      // This is safe because we only expose non-sensitive fields in the app
-      allow get: if true; 
+      allow read;
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if false;
 
-      // Allow a user to create their profile upon signup
-      allow create: if request.auth != null && request.auth.uid == userId;
-      
-      // Allow a user to update their own profile
-      allow update: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Contacts subcollection
-    match /users/{userId}/contacts/{contactId} {
-      // Allow a user to read their own contacts
-      allow read: if request.auth != null && request.auth.uid == userId;
-      
-      // Allow a user to add a new contact
-      allow create: if request.auth != null && request.auth.uid == userId;
-
-      // Allow a user to delete their own contact
-      allow delete: if request.auth != null && request.auth.uid == userId;
+      // Contacts Subcollection
+      // - A user can only manage their own contacts list.
+      match /contacts/{contactId} {
+        allow read, write, delete: if isSignedIn() && request.auth.uid == userId;
+      }
     }
   }
 }

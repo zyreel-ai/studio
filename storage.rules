@@ -1,23 +1,18 @@
-
 rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Default: Deny all reads and writes
-    match /{allPaths=**} {
-      allow read, write: if false;
+    // Helper function to check for authentication
+    function isSignedIn() {
+      return request.auth != null;
     }
-
-    // Allow users to upload and manage their own avatar
-    // The path is structured as 'avatars/{userId}/<filename>'
-    match /avatars/{userId}/{fileName} {
-      // Allow read access to anyone (e.g., to display avatars on public cards)
-      allow read: if true;
-      
-      // Allow write (create, update, delete) only if the user is authenticated
-      // and the `userId` in the path matches their own UID.
-      allow write: if request.auth != null && request.auth.uid == userId;
+    
+    // Allow users to read, write, and delete files in their own folder.
+    // The folder is named after their user ID. This is a secure way to
+    // manage user-specific files like avatars.
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
   }
 }

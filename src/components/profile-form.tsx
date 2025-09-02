@@ -27,19 +27,27 @@ interface ProfileFormProps {
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
-  role: z.string().min(2, 'Role must be at least 2 characters.'),
-  company: z.string().min(2, 'Company must be at least 2 characters.'),
+  role: z.string().min(2, 'Role must be at least 2 characters.').optional().or(z.literal('')),
+  company: z.string().min(2, 'Company must be at least 2 characters.').optional().or(z.literal('')),
   email: z.string().email('Please enter a valid email.'),
-  phone: z.string().min(10, 'Phone number seems too short.'),
-  website: z.string().min(3, 'Website URL seems too short.'),
-  avatarUrl: z.string().url('Please enter a valid URL for your avatar.'),
+  phone: z.string().min(10, 'Phone number seems too short.').optional().or(z.literal('')),
+  website: z.string().min(3, 'Website URL seems too short.').optional().or(z.literal('')),
+  avatarUrl: z.string().url('Please enter a valid URL for your avatar.').optional().or(z.literal('')),
 });
 
 export default function ProfileForm({ userProfile, onProfileUpdate }: ProfileFormProps) {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
-    defaultValues: userProfile,
+    defaultValues: {
+      name: userProfile.name || '',
+      role: userProfile.role || '',
+      company: userProfile.company || '',
+      email: userProfile.email || '',
+      phone: userProfile.phone || '',
+      website: userProfile.website || '',
+      avatarUrl: userProfile.avatarUrl || '',
+    },
   });
 
   async function onSubmit(values: z.infer<typeof profileSchema>) {
