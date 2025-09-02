@@ -1,19 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { userProfile as initialUserProfile } from '@/lib/data';
-import type { UserProfile } from '@/lib/types';
+import { useAuth } from '@/contexts/auth-context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProfileForm from '@/components/profile-form';
 import BackgroundGenerator from '@/components/background-generator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProfilePage() {
-  const [userProfile, setUserProfile] = useState<UserProfile>(initialUserProfile);
-
-  const handleProfileUpdate = (updatedProfile: UserProfile) => {
-    setUserProfile(updatedProfile);
-  };
+  const { userProfile, reloadUserProfile } = useAuth();
   
+  if (!userProfile) {
+    return <ProfilePageSkeleton />;
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <div className="space-y-2">
@@ -27,12 +26,66 @@ export default function ProfilePage() {
           <TabsTrigger value="card-appearance">Card Appearance</TabsTrigger>
         </TabsList>
         <TabsContent value="edit-profile">
-          <ProfileForm userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />
+          <ProfileForm userProfile={userProfile} onProfileUpdate={reloadUserProfile} />
         </TabsContent>
         <TabsContent value="card-appearance">
-          <BackgroundGenerator userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />
+          <BackgroundGenerator userProfile={userProfile} onProfileUpdate={reloadUserProfile} />
         </TabsContent>
       </Tabs>
     </div>
   );
+}
+
+
+function ProfilePageSkeleton() {
+    return (
+        <div className="flex flex-col gap-8">
+            <div className="space-y-2">
+                <Skeleton className="h-10 w-1/2 rounded-md" />
+                <Skeleton className="h-5 w-3/4 rounded-md" />
+            </div>
+
+            <Skeleton className="h-10 w-full rounded-md" />
+            
+            <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                    <Skeleton className="h-20 w-20 rounded-full" />
+                    <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-1/4 rounded-md" />
+                        <Skeleton className="h-10 w-full rounded-md" />
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-5 w-1/4 rounded-md" />
+                        <Skeleton className="h-10 w-full rounded-md" />
+                    </div>
+                     <div className="space-y-2">
+                        <Skeleton className="h-5 w-1/4 rounded-md" />
+                        <Skeleton className="h-10 w-full rounded-md" />
+                    </div>
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-5 w-1/4 rounded-md" />
+                    <Skeleton className="h-10 w-full rounded-md" />
+                </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-5 w-1/4 rounded-md" />
+                        <Skeleton className="h-10 w-full rounded-md" />
+                    </div>
+                     <div className="space-y-2">
+                        <Skeleton className="h-5 w-1/4 rounded-md" />
+                        <Skeleton className="h-10 w-full rounded-md" />
+                    </div>
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-5 w-1/4 rounded-md" />
+                    <Skeleton className="h-10 w-full rounded-md" />
+                </div>
+
+                <Skeleton className="h-10 w-32 rounded-md" />
+            </div>
+        </div>
+    )
 }

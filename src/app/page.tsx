@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { QrCode, Share2, Copy, Check } from 'lucide-react';
 import Image from 'next/image';
 
-import { userProfile } from '@/lib/data';
-import DigitalCard from '@/components/digital-card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -18,10 +16,19 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { useAuth } from '@/contexts/auth-context';
+import DigitalCard from '@/components/digital-card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
   const { toast } = useToast();
   const [hasCopied, setHasCopied] = useState(false);
+  const { userProfile } = useAuth();
+  
+  if (!userProfile) {
+    return <DashboardSkeleton />;
+  }
+
   const shareableLink = typeof window !== 'undefined' ? `${window.location.origin}/c/${userProfile.id}` : '';
 
   const handleCopy = () => {
@@ -90,6 +97,19 @@ export default function Home() {
           <Share2 className="mr-2 h-4 w-4" />
           Share Card
         </Button>
+      </div>
+    </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="flex flex-col items-center gap-8 animate-pulse">
+      <Skeleton className="h-10 w-3/4 rounded-md" />
+      <Skeleton className="w-full max-w-md aspect-[16/9] rounded-xl" />
+      <div className="flex w-full max-w-md flex-col gap-4 sm:flex-row">
+        <Skeleton className="h-10 w-full rounded-md" />
+        <Skeleton className="h-10 w-full rounded-md" />
       </div>
     </div>
   );

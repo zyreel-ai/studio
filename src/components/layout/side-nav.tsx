@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, QrCode, UserCircle, Settings } from 'lucide-react';
+import { Home, Users, QrCode, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -10,6 +10,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAuth } from '@/contexts/auth-context';
+import { Button } from '../ui/button';
 
 const navItems = [
   { href: '/', label: 'My Card', icon: Home },
@@ -20,12 +22,13 @@ const navItems = [
 
 export default function SideNav() {
   const pathname = usePathname();
+  const { logout, user } = useAuth();
 
   return (
-    <aside className="hidden md:block w-16 bg-card border-r transition-all">
+    <aside className="hidden md:flex w-16 bg-card border-r transition-all flex-col justify-between">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
         <Link
-          href="#"
+          href="/"
           className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 transition-all group-hover:scale-110"><path d="M18 8V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v2"/><path d="M2 8h20"/><path d="M17 14h.01"/><path d="M12 14h.01"/><path d="M7 14h.01"/><path d="M18 18H6a2 2 0 0 1-2-2V8h16v8a2 2 0 0 1-2 2Z"/></svg>
@@ -54,6 +57,21 @@ export default function SideNav() {
         })}
         </TooltipProvider>
       </nav>
+      {user && (
+         <div className="flex flex-col items-center gap-4 px-2 py-5">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button onClick={logout} variant="ghost" size="icon" className="h-9 w-9 md:h-8 md:w-8 rounded-lg text-muted-foreground hover:text-destructive">
+                    <LogOut className="h-5 w-5"/>
+                    <span className="sr-only">Logout</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">Logout</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+      )}
     </aside>
   );
 }

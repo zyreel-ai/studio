@@ -17,10 +17,11 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { authService } from '@/lib/firebase/auth';
 
 interface ProfileFormProps {
   userProfile: UserProfile;
-  onProfileUpdate: (profile: UserProfile) => void;
+  onProfileUpdate: () => void;
 }
 
 const profileSchema = z.object({
@@ -40,16 +41,24 @@ export default function ProfileForm({ userProfile, onProfileUpdate }: ProfileFor
     defaultValues: userProfile,
   });
 
-  function onSubmit(values: z.infer<typeof profileSchema>) {
-    const updatedProfile = { ...userProfile, ...values };
-    onProfileUpdate(updatedProfile);
-    toast({
-      title: 'Profile Updated',
-      description: 'Your changes have been saved successfully.',
-    });
+  async function onSubmit(values: z.infer<typeof profileSchema>) {
+    if (!userProfile.uid) {
+        toast({ title: "Error", description: "User not authenticated", variant: "destructive" });
+        return;
+    }
+    try {
+        await authService.updateUserProfile(userProfile.uid, values);
+        onProfileUpdate();
+        toast({
+          title: 'Profile Updated',
+          description: 'Your changes have been saved successfully.',
+        });
+    } catch (error: any) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
   }
   
-  const getInitials = (name: string) => name.split(' ').map((n) => n[0]).join('');
+  const getInitials = (name: string) => name ? name.split(' ').map((n) => n[0]).join('') : '';
 
   return (
     <Card>
@@ -133,7 +142,7 @@ export default function ProfileForm({ userProfile, onProfileUpdate }: ProfileFor
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="alex.doe@pixelperfect.inc" {...field} />
+                      <Input type="email" placeholder="alex.doe@pixelperfect.inc" {...field} disabled />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

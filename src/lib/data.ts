@@ -8,7 +8,7 @@ export const userProfile: UserProfile = {
   email: 'rohan.sharma@infosys.com',
   phone: '+91 98765 43210',
   website: 'infosys.com',
-  avatarUrl: 'https://picsum.photos/200/200',
+  avatarUrl: 'https://picsum.photos/seed/rohan/200/200',
   cardBackgroundUrl: '/card-bg-default.svg',
 };
 
@@ -21,7 +21,7 @@ export const contacts: Contact[] = [
     email: 'p.patel@techmahindra.com',
     phone: '+91 91234 56789',
     website: 'techmahindra.com',
-    avatarUrl: 'https://picsum.photos/201/201',
+    avatarUrl: 'https://picsum.photos/seed/priya/200/200',
   },
   {
     id: 'usr-003',
@@ -31,7 +31,7 @@ export const contacts: Contact[] = [
     email: 'amit.s@wipro.com',
     phone: '+91 99887 76655',
     website: 'wipro.com',
-    avatarUrl: 'https://picsum.photos/202/202',
+    avatarUrl: 'https://picsum.photos/seed/amit/200/200',
   },
   {
     id: 'usr-004',
@@ -41,7 +41,7 @@ export const contacts: Contact[] = [
     email: 's.gupta@hcl.com',
     phone: '+91 92345 67890',
     website: 'hcltech.com',
-    avatarUrl: 'https://picsum.photos/203/203',
+    avatarUrl: 'https://picsum.photos/seed/sunita/200/200',
   },
   {
     id: 'usr-005',
@@ -51,7 +51,7 @@ export const contacts: Contact[] = [
     email: 'vikram.k@tcs.com',
     phone: '+91 93456 78901',
     website: 'tcs.com',
-    avatarUrl: 'https://picsum.photos/204/204',
+    avatarUrl: 'https://picsum.photos/seed/vikram/200/200',
   },
     {
     id: 'usr-006',
@@ -61,7 +61,7 @@ export const contacts: Contact[] = [
     email: 'a.mehta@ltimindtree.com',
     phone: '+91 94567 89012',
     website: 'ltimindtree.com',
-    avatarUrl: 'https://picsum.photos/205/205',
+    avatarUrl: 'https://picsum.photos/seed/anjali/200/200',
   },
   {
     id: 'usr-007',
@@ -71,6 +71,6 @@ export const contacts: Contact[] = [
     email: 'd.reddy@persistent.com',
     phone: '+91 95678 90123',
     website: 'persistent.com',
-    avatarUrl: 'https://picsum.photos/206/206',
+    avatarUrl: 'https://picsum.photos/seed/deepak/200/200',
   },
 ];

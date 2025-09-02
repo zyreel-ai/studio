@@ -8,6 +8,7 @@ export interface UserProfile {
   website: string;
   avatarUrl: string;
   cardBackgroundUrl?: string;
+  uid?: string;
 }
 
 export interface Contact extends UserProfile {}

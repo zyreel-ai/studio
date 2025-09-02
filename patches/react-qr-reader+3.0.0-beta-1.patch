@@ -1,0 +1,22 @@
+patch-package
+--- a/node_modules/react-qr-reader/package.json
++++ b/node_modules/react-qr-reader/package.json
+@@ -43,11 +43,6 @@
+     "react-dom": "^16.8.0 || ^17.0.0"
+   },
+   "peerDependenciesMeta": {
+-    "react-dom": {
+-      "optional": true
+-    }
+-  },
+-  "resolutions": {
+-    "react": "17.0.2",
+-    "react-dom": "17.0.2"
++    "react": {
++      "optional": true
++    },
++    "react-dom": {
++      "optional": true
++    }
+   }
+ }

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
-import SideNav from '@/components/layout/side-nav';
-import BottomNav from '@/components/layout/bottom-nav';
+import { AuthProvider } from '@/contexts/auth-context';
+import AppContent from '@/components/layout/app-content';
 
 export const metadata: Metadata = {
   title: 'ConvoTag Lite',
@@ -30,15 +30,11 @@ export default function RootLayout({
           'min-h-screen bg-background font-body antialiased'
         )}
       >
-        <div className="relative flex min-h-screen flex-col">
-          <div className="flex">
-            <SideNav />
-            <main className="flex-1 p-4 md:p-8">
-              {children}
-            </main>
-          </div>
-          <BottomNav />
-        </div>
+        <AuthProvider>
+          <AppContent>
+            {children}
+          </AppContent>
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

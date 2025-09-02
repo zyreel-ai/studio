@@ -11,10 +11,11 @@ import DigitalCard from './digital-card';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Terminal } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
+import { authService } from '@/lib/firebase/auth';
 
 interface BackgroundGeneratorProps {
   userProfile: UserProfile;
-  onProfileUpdate: (profile: UserProfile) => void;
+  onProfileUpdate: () => void;
 }
 
 export default function BackgroundGenerator({ userProfile, onProfileUpdate }: BackgroundGeneratorProps) {
@@ -49,9 +50,10 @@ export default function BackgroundGenerator({ userProfile, onProfileUpdate }: Ba
     }
   };
 
-  const handleApply = () => {
-    if (generatedBg) {
-      onProfileUpdate({ ...userProfile, cardBackgroundUrl: generatedBg });
+  const handleApply = async () => {
+    if (generatedBg && userProfile.uid) {
+      await authService.updateUserProfile(userProfile.uid, { cardBackgroundUrl: generatedBg });
+      onProfileUpdate();
       toast({
         title: 'Background Applied!',
         description: 'Your new card background has been saved.',
