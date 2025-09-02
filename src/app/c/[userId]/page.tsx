@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 import { useToast } from '@/hooks/use-toast';
+import { analyticsService } from '@/lib/firebase/analytics';
 
 export default function SharedCardPage() {
   const params = useParams();
@@ -28,6 +29,9 @@ export default function SharedCardPage() {
         const fetchedProfile = await authService.getUserProfile(userId);
         setProfile(fetchedProfile);
         setLoading(false);
+        if (fetchedProfile) {
+          analyticsService.logEvent('view_card', { card_owner_id: userId });
+        }
       };
       fetchProfile();
     }
@@ -38,6 +42,7 @@ export default function SharedCardPage() {
     setIsAdding(true);
     try {
       await authService.addContact(user.uid, profile);
+      analyticsService.logEvent('add_contact', { contact_id: profile.uid });
       toast({
         title: 'Contact Added!',
         description: `${profile.name} has been added to your connections.`

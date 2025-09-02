@@ -18,6 +18,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { authService } from '@/lib/firebase/auth';
+import { analyticsService } from '@/lib/firebase/analytics';
 
 interface ProfileFormProps {
   userProfile: UserProfile;
@@ -48,6 +49,7 @@ export default function ProfileForm({ userProfile, onProfileUpdate }: ProfileFor
     }
     try {
         await authService.updateUserProfile(userProfile.uid, values);
+        analyticsService.logEvent('update_profile');
         onProfileUpdate();
         toast({
           title: 'Profile Updated',

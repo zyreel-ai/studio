@@ -25,6 +25,7 @@ import { authService } from '@/lib/firebase/auth';
 import { Github, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
+import { analyticsService } from '@/lib/firebase/analytics';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email.'),
@@ -85,6 +86,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await authService.signInWithEmail(values.email, values.password);
+      analyticsService.logEvent('login', { method: 'email' });
       toast({
         title: 'Login Successful',
         description: "Welcome back!",
@@ -121,6 +123,7 @@ export default function LoginPage() {
       if (confirmationResult) {
         try {
             await confirmationResult.confirm(values.otp);
+            analyticsService.logEvent('login', { method: 'phone' });
             toast({ title: 'Login Successful', description: 'Welcome!' });
             router.push('/dashboard');
         } catch(error: any) {
@@ -135,6 +138,7 @@ export default function LoginPage() {
     setGoogleLoading(true);
     try {
       await authService.signInWithGoogle();
+      analyticsService.logEvent('login', { method: 'google' });
       toast({
         title: 'Login Successful',
         description: "Welcome!",

@@ -20,6 +20,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/auth-context';
 import DigitalCard from '@/components/digital-card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { analyticsService } from '@/lib/firebase/analytics';
 
 export default function DashboardPage() {
   const { toast } = useToast();
@@ -35,6 +36,7 @@ export default function DashboardPage() {
   const handleCopy = () => {
     navigator.clipboard.writeText(shareableLink).then(() => {
       setHasCopied(true);
+      analyticsService.logEvent('share', { method: 'copy_link', content_type: 'business_card' });
       toast({
         title: 'Link Copied!',
         description: 'Your business card link is copied to your clipboard.',

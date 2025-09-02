@@ -21,6 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { authService } from '@/lib/firebase/auth';
 import { Loader2 } from 'lucide-react';
+import { analyticsService } from '@/lib/firebase/analytics';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -46,6 +47,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       await authService.signUpWithEmail(values.email, values.password, values.name);
+      analyticsService.logEvent('sign_up', { method: 'email' });
       toast({
         title: 'Account Created',
         description: 'Your account has been created. Please sign in to continue.',
