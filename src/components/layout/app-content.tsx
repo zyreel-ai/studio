@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { Loader2 } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader } from '@/components/ui/sidebar';
 import SideNav from './side-nav';
+import BottomNav from './bottom-nav'; // Import BottomNav
 
 const publicRoutes = ['/login', '/signup', '/', /^\/c\/[\w-]+$/];
 
@@ -37,17 +38,17 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
 
   return (
     <SidebarProvider>
-      <Sidebar>
-        <SideNav />
-      </Sidebar>
-      <SidebarInset>
-         <SidebarHeader className="border-b">
-           <SidebarTrigger />
-         </SidebarHeader>
-         <main className="p-4 md:p-8">
-          {children}
+      <div className="md:flex">
+        <Sidebar className="hidden md:block">
+          <SideNav />
+        </Sidebar>
+        <main className="flex-1 pb-20 md:pb-0">
+          <div className="p-4 md:p-8">
+            {children}
+          </div>
         </main>
-      </SidebarInset>
+        <BottomNav />
+      </div>
     </SidebarProvider>
   );
 }
