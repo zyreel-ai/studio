@@ -31,23 +31,20 @@ async function extractWebsiteDetails(websiteUrl: string): Promise<string> {
         const dom = new JSDOM(html);
         const document = dom.window.document;
 
-        // Extract brand-relevant information: title, meta description, keywords, etc.
         const title = document.title || '';
         const description = document.querySelector('meta[name="description"]')?.getAttribute('content') || '';
-        const keywords = document.querySelector('meta[name="keywords"]')?.getAttribute('content') || '';
+        
+        const extractedText: string[] = [];
+        const headers = document.querySelectorAll('h1, h2, h3');
+        headers.forEach(header => extractedText.push(header.textContent || ''));
 
-        // Attempt to extract primary colors from CSS styles (very basic).
-        let primaryColor = '';
-        const styleElements = document.querySelectorAll('style');
-        styleElements.forEach(styleElement => {
-            const cssText = styleElement.textContent || '';
-            const colorMatches = cssText.match(/#[0-9a-f]{3,6}/gi);
-            if (colorMatches && colorMatches.length > 0) {
-                primaryColor = colorMatches[0]; // Take the first color found.
-            }
-        });
+        const paragraphs = document.querySelectorAll('p');
+        paragraphs.forEach(p => extractedText.push(p.textContent || ''));
+        
+        const shortText = extractedText.join(' ').substring(0, 1500);
 
-        return `Website Title: ${title}\nDescription: ${description}\nKeywords: ${keywords}\nPrimary Color: ${primaryColor}`;
+
+        return `Website Title: ${title}\nMeta Description: ${description}\nContent: ${shortText}`;
 
     } catch (error) {
         console.error('Error extracting website details:', error);
@@ -59,19 +56,19 @@ export async function generateCardBackgroundFromWebsite(input: GenerateCardBackg
   return generateCardBackgroundFromWebsiteFlow(input);
 }
 
-const generateCardBackgroundPrompt = ai.definePrompt({
+const prompt = ai.definePrompt({
   name: 'generateCardBackgroundPrompt',
   input: {schema: GenerateCardBackgroundFromWebsiteInputSchema},
-  output: {schema: GenerateCardBackgroundFromWebsiteOutputSchema},
-  prompt: `You are an AI that generates prompts for a stable diffusion image generation service.
+  output: {schema: z.object({ prompt: z.string() })},
+  prompt: `You are an AI that generates prompts for an image generation service.
 
   Based on the following website details, create a prompt that will generate a background image suitable for a digital business card. The background should be professional, visually appealing, and aligned with the brand.
   Website Details: {{{websiteDetails}}}
 
   The prompt should be detailed and specific, describing the colors, patterns, and overall style of the background.
   Ensure the prompt is suitable for generating high-quality images.
-  The generated image will be used as a background, so ensure it is subtle and not too distracting.
-  Output should be a single sentence.`,
+  The generated image will be used as a background, so ensure it is subtle and not too distracting. It should be abstract and not contain any text.
+  Output should be a single sentence describing the image to generate.`,
 });
 
 const generateCardBackgroundFromWebsiteFlow = ai.defineFlow(
@@ -82,13 +79,17 @@ const generateCardBackgroundFromWebsiteFlow = ai.defineFlow(
   },
   async input => {
     const websiteDetails = await extractWebsiteDetails(input.websiteUrl);
-    const {text} = await generateCardBackgroundPrompt({
+    const {output} = await prompt({
       websiteDetails: websiteDetails,
     });
+    
+    if (!output?.prompt) {
+        throw new Error("Could not generate a prompt from the website details.");
+    }
 
     const { media } = await ai.generate({
       model: 'googleai/imagen-4.0-fast-generate-001',
-      prompt: text,
+      prompt: output.prompt,
     });
 
     return {

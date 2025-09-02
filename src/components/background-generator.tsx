@@ -3,15 +3,17 @@
 import { useState } from 'react';
 import type { UserProfile } from '@/lib/types';
 import { generateCardBackgroundFromWebsite } from '@/ai/flows/generate-card-background-from-website';
+import { generateBusinessCardBackground } from '@/ai/flows/generate-business-card-background';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import DigitalCard from './digital-card';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Terminal } from 'lucide-react';
+import { Sparkles, Terminal } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { authService } from '@/lib/firebase/auth';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 interface BackgroundGeneratorProps {
   userProfile: UserProfile;
@@ -20,12 +22,13 @@ interface BackgroundGeneratorProps {
 
 export default function BackgroundGenerator({ userProfile, onProfileUpdate }: BackgroundGeneratorProps) {
   const [websiteUrl, setWebsiteUrl] = useState('');
+  const [customPrompt, setCustomPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedBg, setGeneratedBg] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handleGenerate = async () => {
+  const handleGenerateFromWebsite = async () => {
     if (!websiteUrl) {
       setError('Please enter a website URL.');
       return;
@@ -35,7 +38,7 @@ export default function BackgroundGenerator({ userProfile, onProfileUpdate }: Ba
     setGeneratedBg(null);
 
     try {
-      const result = await generateCardBackgroundFromWebsite({ websiteUrl: `https://${websiteUrl}` });
+      const result = await generateCardBackgroundFromWebsite({ websiteUrl: `https://${websiteUrl.replace(/^https?:\/\//, '')}` });
       if (result.backgroundDataUri) {
         setGeneratedBg(result.backgroundDataUri);
       } else {
@@ -44,9 +47,33 @@ export default function BackgroundGenerator({ userProfile, onProfileUpdate }: Ba
     } catch (e) {
       console.error(e);
       const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
-      setError(`Failed to generate background. ${errorMessage}`);
+      setError(`Failed to generate background from website. ${errorMessage}`);
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const handleGenerateFromPrompt = async () => {
+    if (!customPrompt) {
+        setError('Please enter a prompt.');
+        return;
+    }
+    setLoading(true);
+    setError(null);
+    setGeneratedBg(null);
+    try {
+        const result = await generateBusinessCardBackground({prompt: customPrompt});
+         if (result.backgroundDataUri) {
+            setGeneratedBg(result.backgroundDataUri);
+        } else {
+            throw new Error('Failed to generate background. The result was empty.');
+        }
+    } catch(e) {
+        console.error(e);
+        const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
+        setError(`Failed to generate background from prompt. ${errorMessage}`);
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -70,27 +97,54 @@ export default function BackgroundGenerator({ userProfile, onProfileUpdate }: Ba
       <CardHeader>
         <CardTitle>AI Background Generator</CardTitle>
         <CardDescription>
-          Generate a unique background for your card based on your company's website.
+          Generate a unique background for your card using AI.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-2">
-            <label htmlFor="website-url" className="text-sm font-medium">Company Website URL</label>
-            <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground p-2 bg-muted rounded-l-md">https://</span>
-                <Input
-                    id="website-url"
-                    placeholder="yourcompany.com"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    disabled={loading}
-                    className="rounded-l-none"
-                />
-                <Button onClick={handleGenerate} disabled={loading}>
-                    {loading ? 'Generating...' : 'Generate'}
-                </Button>
-            </div>
-        </div>
+        <Tabs defaultValue="website">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="website">From Website</TabsTrigger>
+                <TabsTrigger value="prompt">From Prompt</TabsTrigger>
+            </TabsList>
+            <TabsContent value="website" className="pt-4">
+                 <div className="space-y-2">
+                    <label htmlFor="website-url" className="text-sm font-medium">Company Website URL</label>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground p-2 bg-muted rounded-l-md">https://</span>
+                        <Input
+                            id="website-url"
+                            placeholder="yourcompany.com"
+                            value={websiteUrl}
+                            onChange={(e) => setWebsiteUrl(e.target.value)}
+                            disabled={loading}
+                            className="rounded-l-none"
+                        />
+                        <Button onClick={handleGenerateFromWebsite} disabled={loading}>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            {loading ? 'Generating...' : 'Generate'}
+                        </Button>
+                    </div>
+                </div>
+            </TabsContent>
+            <TabsContent value="prompt" className="pt-4">
+                 <div className="space-y-2">
+                    <label htmlFor="custom-prompt" className="text-sm font-medium">Describe your desired background</label>
+                    <div className="flex items-center gap-2">
+                        <Input
+                            id="custom-prompt"
+                            placeholder="e.g. blue and gold abstract waves"
+                            value={customPrompt}
+                            onChange={(e) => setCustomPrompt(e.target.value)}
+                            disabled={loading}
+                        />
+                        <Button onClick={handleGenerateFromPrompt} disabled={loading}>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            {loading ? 'Generating...' : 'Generate'}
+                        </Button>
+                    </div>
+                </div>
+            </TabsContent>
+        </Tabs>
 
         {error && (
             <Alert variant="destructive">
