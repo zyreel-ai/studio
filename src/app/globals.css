@@ -15,7 +15,7 @@
     --secondary: 207 82% 77%; /* Soft Blue #90CAF9 */
     --secondary-foreground: 215 28% 16%;
     --muted: 210 25% 96.5%;
-    --muted-foreground: 200 20% 73%; /* Medium Gray #B0BEC5 */
+    --muted-foreground: 215 28% 30%; /* Darker Gray */
     --accent: 210 79% 45%; /* Peacock Blue #1976D2 */
     --accent-foreground: 0 0% 100%;
     --destructive: 16 100% 63%; /* Coral Orange #FF7043 */
@@ -45,7 +45,7 @@
     --secondary: 259 42% 50%; /* Royal Purple #6C4AB6 */
     --secondary-foreground: 210 25% 96.5%;
     --muted: 215 28% 22%;
-    --muted-foreground: 200 20% 73%;
+    --muted-foreground: 210 25% 80%; /* Lighter Gray for dark mode */
     --accent: 210 79% 45%; /* Peacock Blue #1976D2 */
     --accent-foreground: 210 25% 96.5%;
     --destructive: 16 100% 63%; /* Coral Orange #FF7043 */
@@ -73,5 +73,9 @@
 }
 
 #d3ebeb {
+  --background: 210 53% 93%;
+}
+
+#c9e0f2 {
   --background: 210 53% 93%;
 }
