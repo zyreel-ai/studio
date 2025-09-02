@@ -48,9 +48,9 @@ export default function SignupPage() {
       await authService.signUpWithEmail(values.email, values.password, values.name);
       toast({
         title: 'Account Created',
-        description: 'Welcome! You can now sign in.',
+        description: 'Your account has been created. Please sign in to continue.',
       });
-      router.push('/dashboard');
+      router.push('/login');
     } catch (error: any) {
       toast({
         variant: 'destructive',
