@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -49,7 +50,7 @@ export default function SignupPage() {
         title: 'Account Created',
         description: 'Welcome! You can now sign in.',
       });
-      router.push('/');
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',

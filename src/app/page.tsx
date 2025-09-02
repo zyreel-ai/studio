@@ -1,116 +1,86 @@
-"use client";
-
-import { useState } from 'react';
-import { QrCode, Share2, Copy, Check } from 'lucide-react';
-import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { useToast } from '@/hooks/use-toast';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { useAuth } from '@/contexts/auth-context';
 import DigitalCard from '@/components/digital-card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { userProfile as demoProfile } from '@/lib/data';
+import { ArrowRight, QrCode, Share2, Star } from 'lucide-react';
+import Link from 'next/link';
 
-export default function Home() {
-  const { toast } = useToast();
-  const [hasCopied, setHasCopied] = useState(false);
-  const { userProfile } = useAuth();
-  
-  if (!userProfile) {
-    return <DashboardSkeleton />;
-  }
+export default function WelcomePage() {
+  const features = [
+    {
+      icon: <QrCode className="h-8 w-8" />,
+      title: 'QR Code Sharing',
+      description: 'Share your card instantly with a personal QR code.'
+    },
+    {
+      icon: <Share2 className="h-8 w-8" />,
+      title: 'Seamless Connections',
+      description: 'Build your professional network with a single tap.'
+    },
+    {
+      icon: <Star className="h-8 w-8" />,
+      title: 'AI-Powered Design',
+      description: 'Generate stunning card backgrounds with AI.'
+    }
+  ]
 
-  const shareableLink = typeof window !== 'undefined' ? `${window.location.origin}/c/${userProfile.id}` : '';
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shareableLink).then(() => {
-      setHasCopied(true);
-      toast({
-        title: 'Link Copied!',
-        description: 'Your business card link is copied to your clipboard.',
-      });
-      setTimeout(() => setHasCopied(false), 2000);
-    });
-  };
-  
   return (
-    <div className="flex flex-col items-center gap-8">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Your Digital Card</h1>
-      
-      <Card className="w-full max-w-md overflow-hidden border-2 shadow-lg">
-        <CardContent className="p-0">
-          <DigitalCard user={userProfile} />
-        </CardContent>
-      </Card>
-
-      <div className="flex w-full max-w-md flex-col gap-4 sm:flex-row">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="w-full">
-              <QrCode className="mr-2 h-4 w-4" />
-              Show QR Code
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
+      <main className="container mx-auto px-4 py-16 flex-1">
+        <section className="text-center">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4">
+            The Future of Business Cards is Here.
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            Create, customize, and share your digital business card in seconds. Never get caught without a card again.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+              <Link href="/signup">
+                Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Scan to Connect</DialogTitle>
-              <DialogDescription>
-                Others can scan this code to save your contact details instantly.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex items-center justify-center rounded-lg bg-background p-4">
-              <Image
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(shareableLink)}&bgcolor=F4F6F8`}
-                width={250}
-                height={250}
-                alt="QR Code"
-                className="rounded-lg"
-                data-ai-hint="qr code"
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="grid flex-1 gap-2">
-                <Input
-                  id="link"
-                  defaultValue={shareableLink}
-                  readOnly
-                  className="bg-muted"
-                />
-              </div>
-              <Button type="button" size="icon" onClick={handleCopy}>
-                <span className="sr-only">Copy</span>
-                {hasCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-        <Button onClick={handleCopy} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-          <Share2 className="mr-2 h-4 w-4" />
-          Share Card
-        </Button>
-      </div>
-    </div>
-  );
-}
+            <Button asChild size="lg" variant="outline">
+              <Link href="/login">Sign In</Link>
+            </Button>
+          </div>
+        </section>
 
-function DashboardSkeleton() {
-  return (
-    <div className="flex flex-col items-center gap-8 animate-pulse">
-      <Skeleton className="h-10 w-3/4 rounded-md" />
-      <Skeleton className="w-full max-w-md aspect-[16/9] rounded-xl" />
-      <div className="flex w-full max-w-md flex-col gap-4 sm:flex-row">
-        <Skeleton className="h-10 w-full rounded-md" />
-        <Skeleton className="h-10 w-full rounded-md" />
-      </div>
+        <section className="my-24">
+            <div className="relative flex justify-center">
+                <div className="w-full max-w-lg">
+                    <DigitalCard user={{...demoProfile, name: 'Your Name', company: 'Your Company'}} />
+                </div>
+            </div>
+        </section>
+        
+        <section className="my-24">
+            <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tight">Why Go Digital?</h2>
+                <p className="text-muted-foreground mt-2">Everything you need to make a great first impression.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {features.map((feature, index) => (
+                    <Card key={index} className="text-center p-8 border-2 hover:border-primary transition-colors">
+                        <CardContent className="flex flex-col items-center gap-4">
+                            <div className="p-4 bg-primary/10 text-primary rounded-full">
+                                {feature.icon}
+                            </div>
+                            <h3 className="text-xl font-semibold">{feature.title}</h3>
+                            <p className="text-muted-foreground">{feature.description}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </section>
+      </main>
+
+      <footer className="w-full border-t py-6">
+        <div className="container mx-auto text-center text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} ConvoTag Lite. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }

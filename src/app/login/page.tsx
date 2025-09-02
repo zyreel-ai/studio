@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -88,7 +89,7 @@ export default function LoginPage() {
         title: 'Login Successful',
         description: "Welcome back!",
       });
-      router.push('/');
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -121,7 +122,7 @@ export default function LoginPage() {
         try {
             await confirmationResult.confirm(values.otp);
             toast({ title: 'Login Successful', description: 'Welcome!' });
-            router.push('/');
+            router.push('/dashboard');
         } catch(error: any) {
             toast({ variant: 'destructive', title: 'OTP Verification Failed', description: error.message });
         } finally {
@@ -138,7 +139,7 @@ export default function LoginPage() {
         title: 'Login Successful',
         description: "Welcome!",
       });
-      router.push('/');
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',

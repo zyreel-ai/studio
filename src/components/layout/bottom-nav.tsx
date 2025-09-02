@@ -1,16 +1,17 @@
+
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, QrCode, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, QrCode, User, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/auth-context';
 
 const navItems = [
-  { href: '/', label: 'My Card', icon: Home },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/contacts', label: 'Contacts', icon: Users },
   { href: '/scan', label: 'Scan', icon: QrCode },
-  { href: '/profile', label: 'Profile', icon: Settings },
+  { href: '/profile', label: 'Profile', icon: User },
 ];
 
 export default function BottomNav() {

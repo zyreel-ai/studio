@@ -1,15 +1,16 @@
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const protectedRoutes = ['/', '/contacts', '/profile', '/scan'];
-const authRoutes = ['/login', '/signup'];
+const protectedRoutes = ['/dashboard', '/contacts', '/profile', '/scan'];
+const publicRoutes = ['/login', '/signup', '/'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const authed = request.cookies.has('firebaseIdToken');
 
-  if (authed && authRoutes.includes(pathname)) {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (authed && (pathname === '/login' || pathname === '/signup')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   if (!authed && protectedRoutes.includes(pathname)) {
